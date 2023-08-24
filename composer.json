@@ -1,0 +1,29 @@
+{
+    "name": "joanjpx/elk-filesearch",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Joanjpx\\ElkFilesearch\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "joanjpx"
+        }
+    ],
+    "require": {
+        "elasticsearch/elasticsearch": "^8.9",
+        "phpoffice/phpword": "^1.1",
+        "setasign/fpdi": "^2.4",
+        "setasign/fpdf": "^1.8",
+        "spatie/pdf-to-text": "^1.52",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "phpoffice/phppresentation": "^1.0",
+        "james-heinrich/getid3": "^1.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
