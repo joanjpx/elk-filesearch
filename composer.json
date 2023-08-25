@@ -3,7 +3,7 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Joanjpx\\ElkFilesearch\\": "src/"
+            "ElkFilesearch\\": "src/"
         }
     },
     "authors": [
@@ -26,4 +26,5 @@
             "php-http/discovery": true
         }
     }
+   
 }

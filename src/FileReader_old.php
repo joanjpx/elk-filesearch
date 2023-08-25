@@ -1,13 +1,24 @@
 <?php
 
-namespace ElkFilesearch;
+namespace FileSearch;
 
+require '../vendor/autoload.php';
+use GuzzleHttp\Client as HttpClient;
+use Elastic\Elasticsearch\ClientBuilder;
 use Exception;
 use getID3 as GlobalGetID3;
 
-class FileReader
+class FileReader_old
 {
-    
+    private string $user = 'elastic';
+    private string $pass = 'gnbit123';
+    private array $hosts = [
+        [
+            'host' => '192.168.10.71',
+            'port' => 9200,
+            'scheme' => 'https',
+        ],
+    ];
 
     public function getAllFilePaths(string $directory = '../files')
     {
@@ -18,17 +29,10 @@ class FileReader
             \RecursiveIteratorIterator::SELF_FIRST
         );
 
-        $i = 0;
         foreach ($iterator as $file) {
             if ($file->isFile()) {
                 $filePaths[] = $file->getPathname();
             }
-
-            
-            if($i > 10){
-                return $filePaths;
-            }
-            $i++;
         }
 
         return $filePaths;
@@ -48,6 +52,24 @@ class FileReader
         ];
     }
 
+    public function insertDocumentToElasticsearch($document)
+    {
+        $client = (new ClientBuilder)
+        ->setBasicAuthentication($this->user, $this->pass)
+        ->setHttpClient(new HttpClient(['verify' => false ]))
+        ->setHosts(['192.168.10.71:9200'])
+        ->build();
+
+        $params = [
+            'index' => 'files',
+            'type' => '_doc',
+            'body' => $document,
+        ];
+
+        $response = $client->index($params);
+        // ... (handle response or errors)
+    }
+
     private function convertObjectsToArray($data)
     {
         if (is_object($data)) {
@@ -62,34 +84,43 @@ class FileReader
     public function getDocumentsToInsert(array $filePaths): array
     {
         $documents = [];
-    
+
         foreach ($filePaths as $filePath) {
-    
+
             $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-    
+
             if (empty($filePath) || in_array($extension, ['zip', 'rar', 'stl', 'dwg'])) {
                 continue;
             }
-    
+
             $document = [
-                'title' => mb_convert_encoding(basename($filePath), 'UTF-8'),
-                'file_type' => mb_convert_encoding($extension, 'UTF-8'),
-                'path' => mb_convert_encoding($filePath, 'UTF-8'),
+                'title' => basename($filePath),
+                'file_type' => $extension,
+                'path' => $filePath,
                 'date' => date('Y-m-d H:i:s'),
                 'update_date' => date('Y-m-d H:i:s', filemtime($filePath)),
             ];
-    
-            /*if (strpos($document['title'], '~$') === false) {
+
+            if (strpos($document['title'], '~$') === false) {
                 echo $document['title'] . "\n";
                 $fileInfo = $this->extractFileInfo($filePath);
                 $document['metadata'] = $this->convertObjectsToArray($fileInfo['metadata']);
                 $document['content'] = $fileInfo['content'];
             }
-    
-            $document['metadata'] = json_encode($document['metadata'] ?? null, JSON_UNESCAPED_UNICODE);*/
+
+            $document['metadata'] = json_encode($document['metadata'] ?? null);
             $documents[] = $document;
         }
-    
+
         return $documents;
     }
 }
+
+$reader = new FileReader;
+$documents = $reader->getDocumentsToInsert($reader->getAllFilePaths());
+
+foreach ($documents as $document) {
+    $reader->insertDocumentToElasticsearch($document);
+}
+
+print_r($documents);
