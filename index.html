@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELK Filesearch</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+  }
+  #search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  #search-box {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+  #search-input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    outline: none;
+  }
+  #search-button {
+    background-color: #4285f4;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  #suggestions {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 8px;
+    display: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: #fff;
+  }
+  .suggestion {
+    padding: 8px;
+    cursor: pointer;
+  }
+  .suggestion:hover {
+    background-color: #f0f0f0;
+  }
+</style>
+</head>
+<body>
+  <div id="search-container">
+    <div id="search-box">
+      <input type="text" id="search-input" placeholder="File search">
+      <div id="suggestions"></div>
+      <button id="search-button">Search</button>
+    </div>
+  </div>
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const suggestionsContainer = document.getElementById('suggestions');
+  
+    searchInput.addEventListener('input', () => {
+      const inputText = searchInput.value.trim();
+  
+      if (inputText.length > 0) {
+        fetch(`http://localhost/src/Api.php?q=${inputText}`)
+          .then(response => response.json())
+          .then(data => {
+            const hits = data.hits.hits;
+            const suggestions = hits.map(hit => hit._source.title);
+  
+            suggestionsContainer.innerHTML = '';
+            suggestions.forEach(suggestion => {
+              const suggestionElement = document.createElement('div');
+              suggestionElement.className = 'suggestion';
+              suggestionElement.textContent = suggestion;
+              suggestionElement.addEventListener('click', () => {
+                searchInput.value = suggestion;
+                suggestionsContainer.innerHTML = '';
+              });
+              suggestionsContainer.appendChild(suggestionElement);
+            });
+  
+            suggestionsContainer.style.display = 'block';
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      } else {
+        suggestionsContainer.innerHTML = '';
+        suggestionsContainer.style.display = 'none';
+      }
+    });
+  
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        suggestionsContainer.style.display = 'none';
+      }, 200);
+    });
+  </script>
+</body>
+</html>

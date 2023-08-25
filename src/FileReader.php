@@ -5,6 +5,7 @@ namespace ElkFilesearch;
 use Exception;
 use getID3 as GlobalGetID3;
 
+
 class FileReader
 {
     
@@ -21,31 +22,40 @@ class FileReader
         $i = 0;
         foreach ($iterator as $file) {
             if ($file->isFile()) {
-                $filePaths[] = $file->getPathname();
+                
+                $extension = pathinfo($file->getPathname(), PATHINFO_EXTENSION);
+                if(in_array($extension,['doc','docx'])){
+                    $filePaths[] = $file->getPathname();
+                    $i++;
+                }
             }
 
-            
-            if($i > 10){
+            if($i > 10000){
                 return $filePaths;
             }
-            $i++;
         }
 
         return $filePaths;
     }
 
-    public function extractFileInfo($filename)
-    {
-        $getID3 = new GlobalGetID3();
-        $fileInfo = $getID3->analyze($filename);
+    // public function extractFileInfo($filename)
+    // {
+    //     $getID3 = new GlobalGetID3();
+    //     $fileInfo = $getID3->analyze($filename);
 
-        $metadata = $fileInfo['tags'] ?? [];
-        $content = file_get_contents($filename);
+    //     $metadata = $fileInfo['tags'] ?? [];
+    //     $content = file_get_contents($filename);
 
-        return [
-            'metadata' => $metadata,
-            'content' => $content,
-        ];
+    //     return [
+    //         'metadata' => $metadata,
+    //         'content' => $content,
+    //     ];
+    // }
+
+    public function getAllMetaTags($filePath) {
+
+        $metaTags = get_meta_tags($filePath);
+        return $metaTags;
     }
 
     private function convertObjectsToArray($data)
@@ -59,6 +69,28 @@ class FileReader
         return null;
     }
 
+    public function getContentFromDocument(string $path) : string
+    {
+        $document = \PhpOffice\PhpWord\IOFactory::load($path); // Cambia la ruta al documento que deseas procesar
+
+        $content = '';
+
+        // Recorre todos los elementos del documento y extrae el contenido de texto
+        foreach ($document->getSections() as $section) {
+            foreach ($section->getElements() as $element) {
+                if ($element instanceof \PhpOffice\PhpWord\Element\TextRun) {
+                    foreach ($element->getElements() as $textElement) {
+                        if ($textElement instanceof \PhpOffice\PhpWord\Element\Text) {
+                            $content .= $textElement->getText();
+                        }
+                    }
+                }
+            }
+        }
+
+        return $content; // Imprime el contenido extraído del documento
+    }
+
     public function getDocumentsToInsert(array $filePaths): array
     {
         $documents = [];
@@ -67,27 +99,26 @@ class FileReader
     
             $extension = pathinfo($filePath, PATHINFO_EXTENSION);
     
-            if (empty($filePath) || in_array($extension, ['zip', 'rar', 'stl', 'dwg'])) {
+            if (empty($filePath) || in_array($extension, ['zip', 'rar', 'stl', 'dwg']) || strpos($filePath, '$')) {
                 continue;
             }
-    
-            $document = [
-                'title' => mb_convert_encoding(basename($filePath), 'UTF-8'),
-                'file_type' => mb_convert_encoding($extension, 'UTF-8'),
-                'path' => mb_convert_encoding($filePath, 'UTF-8'),
-                'date' => date('Y-m-d H:i:s'),
-                'update_date' => date('Y-m-d H:i:s', filemtime($filePath)),
-            ];
-    
-            /*if (strpos($document['title'], '~$') === false) {
-                echo $document['title'] . "\n";
-                $fileInfo = $this->extractFileInfo($filePath);
-                $document['metadata'] = $this->convertObjectsToArray($fileInfo['metadata']);
-                $document['content'] = $fileInfo['content'];
+
+            if(in_array($extension, ['doc','docx']))
+            {
+                $document = [
+                    'title' => mb_convert_encoding(basename($filePath), 'UTF-8'),
+                    'file_type' => mb_convert_encoding($extension, 'UTF-8'),
+                    'path' => mb_convert_encoding($filePath, 'UTF-8'),
+                    'date' => date('Y-m-d H:i:s'),
+                    'update_date' => date('Y-m-d H:i:s', filemtime($filePath)),
+                ];
+                
+                $document['metadata'] = $this->getAllMetaTags($filePath);
+                $document['body'] = $this->getContentFromDocument($filePath);
+
+                $documents[] = $document;
             }
     
-            $document['metadata'] = json_encode($document['metadata'] ?? null, JSON_UNESCAPED_UNICODE);*/
-            $documents[] = $document;
         }
     
         return $documents;

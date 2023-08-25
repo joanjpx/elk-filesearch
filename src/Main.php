@@ -1,11 +1,7 @@
 <?php
-
-
 namespace ElkFilesearch;
 
-use GuzzleHttp\Client;
-use ElkFilesearch\HttpClient;
-use ElkFilesearch\FileReader;
+require '../vendor/autoload.php'; // Carga el archivo de autoloading
 
 
 class Main{
@@ -19,17 +15,16 @@ class Main{
     public function execute()
     {
         try {
-            //$response = $this->client->get("/");
-            //$statusCode = $response->getStatusCode();
 
-
-            $path = '/home/benjamin/shared_win/IA-TEST/ING/';
+            $path = '../files';
 
             $documents = $this->reader->getDocumentsToInsert($this->reader->getAllFilePaths($path));
     
             $i = 1;
-            foreach ($documents as $document) {
-                $response = $this->client->post("/files/_doc/".$i,[
+            
+            foreach ($documents as $document) 
+            {
+                $response = $this->client->post("/filesearch/_doc",[
                     'json' => $document,
                 ]);
                 
@@ -38,14 +33,7 @@ class Main{
                 $i++;
             }
 
-
-            /*if ($statusCode === 200) {
-                $body = $response->getBody()->getContents();
-                print_r($body);
-            } else {
-                echo "Unexpected response status code: $statusCode";
-            }*/
-        } catch (GuzzleHttp\Exception\ConnectException $e) {
+        } catch (\GuzzleHttp\Exception\ConnectException $e) {
             echo "Connection error: " . $e->getMessage();
             echo "\n";
             echo "Exception trace:\n";
@@ -56,5 +44,4 @@ class Main{
 }
 
 
-require 'vendor/autoload.php'; // Carga el archivo de autoloading
 (new Main)->execute();

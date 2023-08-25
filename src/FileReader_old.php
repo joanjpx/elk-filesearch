@@ -123,4 +123,4 @@ foreach ($documents as $document) {
     $reader->insertDocumentToElasticsearch($document);
 }
 
-print_r($documents);
+// print_r($documents);
