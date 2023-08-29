@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .search-bar {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+        .search-input {
+            width: 40%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-button {
+            padding: 8px 15px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-button:hover {
+            background-color: #357ae8;
+        }
+
+        .settings-button {
+            padding: 8px 15px;
+            background-color: #696969;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .settings-button:hover {
+            background-color: #a9a9a9;
+        }
+        .search-result {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .result-title {
+            font-weight: bold;
+            color: #1a0dab;
+        }
+        .result-url {
+            color: #006621;
+        }
+        .result-description {
+            color: #545454;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-bar">
+        <button class="settings-button">Ajustes</button>
+        <input type="text" class="search-input" placeholder="Search...">
+        <button class="search-button">Search</button>
+    </div>
+    <div class="search-result">
+        <a href="#" class="result-title">Sample Search Result Title</a>
+        <div class="result-url">www.example.com</div>
+        <div class="result-description">This is a brief description of the search result. It provides information about the content of the link.</div>
+    </div>
+    <div class="search-result">
+        <a href="#" class="result-title">Another Sample Result</a>
+        <div class="result-url">www.example.org</div>
+        <div class="result-description">A different result with its own description. It could be more detailed or concise.</div>
+    </div>
+    <!-- Add more search results as needed -->
+</body>
+</html>
