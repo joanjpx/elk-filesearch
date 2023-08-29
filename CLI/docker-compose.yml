@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  ubuntu-container:
+    image: ubuntu:latest
+    volumes:
+      - ./files:/data
+      - ./scripts:/scripts
+    command: bash -c "apt-get update && apt-get install -y inotify-tools php8.1-cli php8.1-common php8.1-mysql php8.1-zip php8.1-gd php8.1-mbstring php8.1-curl php8.1-xml php8.1-bcmath && sleep infinity"

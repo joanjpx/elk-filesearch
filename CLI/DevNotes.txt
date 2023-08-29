@@ -1,0 +1,22 @@
+* Como detectar cambios en el directorio y ejecutar acciones
+ : inotifywait : PATH y EVENTO
+
+
+ * Busqueda e Indexación:
+    - Leer directorio y cargar a ELK
+    - 
+ * Front:
+    - Vista donde agrego las rutas(carpetas) a indexar.
+    - Buscador (debe mostrar si es Imagen, Link descargar cuando no).
+
+* nohup "" >> inotify.log
+
+*   $nohup = "ps -l |grep inotify"
+    if(strlen($nohup)==0)
+    {
+
+    }
+
+    basado en google:
+        Link -> Nombre del archivo
+        

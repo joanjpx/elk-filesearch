@@ -8,6 +8,8 @@ use getID3 as GlobalGetID3;
 
 class FileReader
 {
+
+    const ALLOWED_EXTENSIONS = ['doc','docx'];
     
 
     public function getAllFilePaths(string $directory = '../files')
@@ -37,21 +39,7 @@ class FileReader
 
         return $filePaths;
     }
-
-    // public function extractFileInfo($filename)
-    // {
-    //     $getID3 = new GlobalGetID3();
-    //     $fileInfo = $getID3->analyze($filename);
-
-    //     $metadata = $fileInfo['tags'] ?? [];
-    //     $content = file_get_contents($filename);
-
-    //     return [
-    //         'metadata' => $metadata,
-    //         'content' => $content,
-    //     ];
-    // }
-
+    
     public function getAllMetaTags($filePath) {
 
         $metaTags = get_meta_tags($filePath);
@@ -95,32 +83,42 @@ class FileReader
     {
         $documents = [];
     
-        foreach ($filePaths as $filePath) {
-    
-            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-    
-            if (empty($filePath) || in_array($extension, ['zip', 'rar', 'stl', 'dwg']) || strpos($filePath, '$')) {
-                continue;
-            }
+        foreach ($filePaths as $filePath) 
+        {
+            $document = $this->getDocumentToInsert($filePath);
 
-            if(in_array($extension, ['doc','docx']))
+            if(!empty($document))
             {
-                $document = [
-                    'title' => mb_convert_encoding(basename($filePath), 'UTF-8'),
-                    'file_type' => mb_convert_encoding($extension, 'UTF-8'),
-                    'path' => mb_convert_encoding($filePath, 'UTF-8'),
-                    'date' => date('Y-m-d H:i:s'),
-                    'update_date' => date('Y-m-d H:i:s', filemtime($filePath)),
-                ];
-                
-                $document['metadata'] = $this->getAllMetaTags($filePath);
-                $document['body'] = $this->getContentFromDocument($filePath);
-
                 $documents[] = $document;
             }
-    
         }
     
         return $documents;
+    }
+
+    public function getDocumentToInsert(string $filePath) : array
+    {
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+    
+        if (empty($filePath) || in_array($extension, ['zip', 'rar', 'stl', 'dwg']) || strpos($filePath, '$')) 
+        {
+            return null;
+        }
+
+        if(in_array($extension, self::ALLOWED_EXTENSIONS))
+        {
+            $document = [
+                'title' => mb_convert_encoding(basename($filePath), 'UTF-8'),
+                'file_type' => mb_convert_encoding($extension, 'UTF-8'),
+                'path' => mb_convert_encoding($filePath, 'UTF-8'),
+                'date' => date('Y-m-d H:i:s'),
+                'update_date' => date('Y-m-d H:i:s', filemtime($filePath)),
+            ];
+            
+            $document['metadata'] = $this->getAllMetaTags($filePath);
+            $document['body'] = $this->getContentFromDocument($filePath);
+
+            $documents[] = $document;
+        }
     }
 }
