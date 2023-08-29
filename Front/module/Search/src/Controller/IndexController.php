@@ -12,12 +12,10 @@ use Search\Service\ELKService;
 
 class IndexController extends AbstractActionController
 {
-    private $service;
-
-    public function __construct(private ContainerInterface $container)
-    {   
-        $this->service = $this->container->get(ELKService::class);
-    }
+    // public function __construct(private ContainerInterface $container)
+    // {   
+    //     $this->service = $this->container->get(ELKService::class);
+    // }
 
     public function indexAction()
     {
@@ -31,12 +29,7 @@ class IndexController extends AbstractActionController
         
     public function searchAction() : JsonModel
     {
-        $data = ELKService::search(
-            $this->getRequest()->getQuery('q')
-        );
-
-        return new JsonModel($data);
-        
+        return new JsonModel([]);   
     }
 
 }
