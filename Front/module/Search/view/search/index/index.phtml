@@ -63,18 +63,24 @@
     <div id="search-box">
       <input type="text" id="search-input" placeholder="File search">
       <div id="suggestions"></div>
-      <button type="button" onclick="setSearch(document.getElementById('search-input').value);" id="search-button">Buscar <i class="fa fa-search"></i></button>
+      <button type="button" id="search-button">Buscar <i class="fa fa-search"></i></button>
     </div>
   </div>
   <script>
     const searchInput = document.getElementById('search-input');
     const suggestionsContainer = document.getElementById('suggestions');
+    const searchButton = document.getElementById('search-button');
+
+    searchButton.addEventListener('click', () => {
+
+        window.location.href="/search/results?q="+searchInput.value;
+    });
   
     searchInput.addEventListener('input', () => {
       const inputText = searchInput.value.trim();
   
       if (inputText.length > 0) {
-        fetch(`/search?q=${inputText}`)
+        fetch(`/search/search?q=${inputText}`)
           .then(response => response.json())
           .then(data => {
             const hits = data.hits.hits;

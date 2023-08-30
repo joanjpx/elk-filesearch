@@ -59,25 +59,38 @@
         }
         .result-description {
             color: #545454;
+            word-break: break-word;
         }
     </style>
 </head>
 <body>
     <div class="search-bar">
         <button class="settings-button">Ajustes</button>
-        <input type="text" class="search-input" placeholder="Search...">
-        <button class="search-button">Search</button>
+        <input type="text" class="search-input" placeholder="Buscar...">
+        <button class="search-button">Buscar</button>
     </div>
-    <div class="search-result">
-        <a href="#" class="result-title">Sample Search Result Title</a>
-        <div class="result-url">www.example.com</div>
-        <div class="result-description">This is a brief description of the search result. It provides information about the content of the link.</div>
-    </div>
-    <div class="search-result">
-        <a href="#" class="result-title">Another Sample Result</a>
-        <div class="result-url">www.example.org</div>
-        <div class="result-description">A different result with its own description. It could be more detailed or concise.</div>
-    </div>
+    <?php foreach ($data['hits']['hits'] as $result): ?>
+        <div class="search-result">
+            <a href="#" class="result-title"><?= $result['_source']['title'] ?></a>
+            <div class="result-url"><?= $result['_source']['path'] ?></div>
+            <?php
+                $description = $result['_source']['body'];
+                $truncatedDescription = strlen($description) > 600 ? substr($description, 0, 600) . '...' : $description;
+            ?>
+            
+            <div class="result-description"><?= $truncatedDescription ?></div>
+        </div>
+    <?php endforeach; ?>
     <!-- Add more search results as needed -->
+    <script>
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+
+    searchButton.addEventListener('click', () => {
+
+        window.location.href="/search/results?q="+searchInput.value;
+    });
+
+  </script>
 </body>
 </html>
