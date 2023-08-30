@@ -66,8 +66,8 @@
 <body>
     <div class="search-bar">
         <button class="settings-button">Ajustes</button>
-        <input type="text" class="search-input" placeholder="Buscar...">
-        <button class="search-button">Buscar</button>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar..." value="<?= $this->search ?>">
+        <button id="search-button" class="search-button">Buscar</button>
     </div>
     <?php foreach ($data['hits']['hits'] as $result): ?>
         <div class="search-result">
@@ -88,7 +88,7 @@
 
     searchButton.addEventListener('click', () => {
 
-        window.location.href="/search/results?q="+searchInput.value;
+        window.location.href="/search/result?q="+searchInput.value;
     });
 
   </script>
