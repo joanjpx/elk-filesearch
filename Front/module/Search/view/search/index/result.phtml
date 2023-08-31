@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,17 +11,20 @@
             margin: 0;
             padding: 0;
         }
+
         .search-bar {
             background-color: #f2f2f2;
             padding: 10px;
             text-align: center;
         }
+
         .search-input {
             width: 40%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         .search-button {
             padding: 8px 15px;
             background-color: #4285f4;
@@ -29,6 +33,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .search-button:hover {
             background-color: #357ae8;
         }
@@ -41,56 +46,102 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .settings-button:hover {
             background-color: #a9a9a9;
         }
+
         .search-result {
             margin: 20px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         .result-title {
             font-weight: bold;
             color: #1a0dab;
         }
+
         .result-url {
             color: #006621;
         }
+
         .result-description {
             color: #545454;
             word-break: break-word;
         }
     </style>
 </head>
+<?php
+function formatBytes($bytes, $precision = 2) { 
+    $units = array('B', 'KB', 'MB', 'GB', 'TB'); 
+   
+    $bytes = max($bytes, 0); 
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024)); 
+    $pow = min($pow, count($units) - 1); 
+   
+    // Uncomment one of the following alternatives
+    $bytes /= pow(1024, $pow);
+    // $bytes /= (1 << (10 * $pow)); 
+   
+    return round($bytes, $precision) . $units[$pow]; 
+} 
+?>
+
 <body>
     <div class="search-bar">
-        <button class="settings-button">Ajustes</button>
+        <button class="settings-button" data-toggle="modal" data-target="#urlModal">Ajustes</button>
         <input type="text" id="search-input" class="search-input" placeholder="Buscar..." value="<?= $this->search ?>">
         <button id="search-button" class="search-button">Buscar</button>
     </div>
-    <?php foreach ($data['hits']['hits'] as $result): ?>
+    <div class="modal fade" id="urlModal" tabindex="-1" role="dialog" aria-labelledby="urlModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="urlModalLabel">Add URLs</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" id="urlInput" placeholder="Enter URL">
+                    <button type="button" class="btn btn-success" id="addUrlButton">Add URL</button>
+                    <ul id="urlList" class="list-group mt-3">
+                        <!-- URLs will be dynamically added here -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php foreach ($data['hits']['hits'] as $result) : ?>
         <div class="search-result">
-            <a href="#" class="result-title"><?= $result['_source']['title'] ?></a>
-            <div class="result-url"><?= $result['_source']['path'] ?></div>
+            <a download href="<?= $result['_source']['file_path'] ?>" class="result-title"><?= $result['_source']['title'] ?></a>
+            <div class="result-url"><?= $result['_source']['file_path'] ?></div>
+            <div class="result-file-size"><?= formatBytes($result['_source']['file_size']) ?></div>
             <?php
-                $description = $result['_source']['body'];
-                $truncatedDescription = strlen($description) > 600 ? substr($description, 0, 600) . '...' : $description;
+            $description = $result['_source']['file_content'];
+            $truncatedDescription = strlen($description) > 600 ? substr($description, 0, 600) . '...' : $description;
             ?>
-            
+
             <div class="result-description"><?= $truncatedDescription ?></div>
         </div>
     <?php endforeach; ?>
     <!-- Add more search results as needed -->
     <script>
-    const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button');
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
 
-    searchButton.addEventListener('click', () => {
+        searchButton.addEventListener('click', () => {
 
-        window.location.href="/search/result?q="+searchInput.value;
-    });
-
-  </script>
+            window.location.href = "/search/result?q=" + searchInput.value;
+        });
+    </script>
 </body>
+
 </html>

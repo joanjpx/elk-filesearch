@@ -9,7 +9,7 @@ class ELKService
     
     public function search(string $search)
     {
-        $response = ELKClient::create()->post("/filesearch/_search?q=*".$search."*");
+        $response = ELKClient::create()->post("/files/_search?q=*".$search."*");
         
         return json_decode($response->getBody()->getContents(), true);
     }

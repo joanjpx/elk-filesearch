@@ -11,7 +11,7 @@ class ELKClient
     public static function create(): Client
     {
         return new Client([
-            'base_uri'        => 'https://192.168.10.71:9200',
+            'base_uri'        => 'https://192.168.10.75:9200',
             'timeout'         => 30,
             'verify'          => false, // Ignore SSL certificate
             'max_connections' => 10,
