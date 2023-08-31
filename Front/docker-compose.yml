@@ -1,7 +1,24 @@
+version: '3'
+
 services:
-  laminas:
-    build: .
+  search:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elk.search.do
     ports:
-     - "8080:80"
+      - 2121:80
     volumes:
-     - .:/var/www
+      - .:/var/www 
+      - ./php8.1.ini:/usr/local/etc/php/conf.d/php8.1.ini
+      - /home/benjamin/shared_win/:/var/www/shared_win/
+      - /home/benjamin/Downloads/Test/:/var/www/ftest/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server-panorama.entrypoints=web"
+      - "traefik.http.routers.server-panorama.rule=Host(`elk.search.do`)"
+
+networks:
+  default:
+    external:
+      name: traefik_net      
