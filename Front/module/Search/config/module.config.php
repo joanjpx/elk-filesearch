@@ -53,6 +53,36 @@ return [
                             ],
                         ],
                     ],
+                    'add-path' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/add-path',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'search',
+                            ],
+                        ],
+                    ],
+                    'show-path' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/show-path',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'search',
+                            ],
+                        ],
+                    ],
+                    'search' => [
+                        'type'    => Segment::class,
+                        'options' => [
+                            'route'    => '/search',
+                            'defaults' => [
+                                'controller' => Controller\IndexController::class,
+                                'action'     => 'search',
+                            ],
+                        ],
+                    ],
                 ]
             ]
         ],

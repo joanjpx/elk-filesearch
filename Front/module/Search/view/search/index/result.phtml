@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Google Search Results</title>
     <style>
         body {
@@ -123,7 +124,10 @@ function formatBytes($bytes, $precision = 2) {
         <div class="search-result">
             <a download href="<?= $result['_source']['file_path'] ?>" class="result-title"><?= $result['_source']['title'] ?></a>
             <div class="result-url"><?= $result['_source']['file_path'] ?></div>
-            <div class="result-file-size"><?= formatBytes($result['_source']['file_size']) ?></div>
+            <div class="result-file-size">
+                <?= formatBytes($result['_source']['file_size']) ?> 
+                | Creado: <?= date('Y-m-d H:i', $result['_source']['file_created_at']['secs_since_epoch']) ?>
+                | Modificado: <?= date('Y-m-d H:i', $result['_source']['file_modified_at']['secs_since_epoch']) ?></div>
             <?php
             $description = $result['_source']['file_content'];
             $truncatedDescription = strlen($description) > 600 ? substr($description, 0, 600) . '...' : $description;
@@ -142,6 +146,9 @@ function formatBytes($bytes, $precision = 2) {
             window.location.href = "/search/result?q=" + searchInput.value;
         });
     </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>

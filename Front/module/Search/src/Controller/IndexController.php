@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Search\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
 use Psr\Container\ContainerInterface;
 use Search\Service\ELKService;
@@ -27,7 +28,7 @@ class IndexController extends AbstractActionController
         $data = $this->service->search(
             $search
         );
-
+        
         return new ViewModel([
             'data' => $data,
             'search' => $search
@@ -38,6 +39,26 @@ class IndexController extends AbstractActionController
     {
         $q = $this->getRequest()->getQuery('q');
         echo json_encode($this->service->search($q));exit;
+    }
+
+
+    public function addPathAction() : JsonModel
+    {
+        return new JsonModel([
+            "response" => $this->service->addUrl("https://www.example.com")
+        ]);
+    }
+    
+    public function removePathAction() : JsonModel
+    {
+        return new JsonModel([
+            "response" => $this->service->deleteUrl("https://www.example.com")
+        ]);
+    }
+    
+    public function showPathsAction() : JsonModel
+    {
+        return new JsonModel($this->service->readUrls());
     }
 
 }
