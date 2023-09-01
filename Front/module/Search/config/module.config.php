@@ -59,7 +59,7 @@ return [
                             'route'    => '/add-path',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
-                                'action'     => 'search',
+                                'action'     => 'addPath',
                             ],
                         ],
                     ],
@@ -69,17 +69,17 @@ return [
                             'route'    => '/show-path',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
-                                'action'     => 'search',
+                                'action'     => 'showPaths',
                             ],
                         ],
                     ],
-                    'search' => [
+                    'remove-path' => [
                         'type'    => Segment::class,
                         'options' => [
-                            'route'    => '/search',
+                            'route'    => '/remove-path',
                             'defaults' => [
                                 'controller' => Controller\IndexController::class,
-                                'action'     => 'search',
+                                'action'     => 'removePath',
                             ],
                         ],
                     ],

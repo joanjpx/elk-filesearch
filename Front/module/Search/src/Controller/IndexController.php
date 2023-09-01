@@ -13,7 +13,7 @@ use Search\Service\ELKService;
 class IndexController extends AbstractActionController
 {
     public function __construct(private ContainerInterface $container)
-    {   
+    {
         $this->service = $this->container->get(ELKService::class);
     }
 
@@ -21,44 +21,85 @@ class IndexController extends AbstractActionController
     {
         return [];
     }
-    
-    public function resultAction() : ViewModel
+
+    public function resultAction(): ViewModel
     {
         $search = $this->getRequest()->getQuery('q');
         $data = $this->service->search(
             $search
         );
-        
+
         return new ViewModel([
             'data' => $data,
             'search' => $search
         ]);
     }
-    
+
     public function searchAction()
     {
         $q = $this->getRequest()->getQuery('q');
-        echo json_encode($this->service->search($q));exit;
+        echo json_encode($this->service->search($q));
+        exit;
     }
 
 
-    public function addPathAction() : JsonModel
+    public function addPathAction()
     {
-        return new JsonModel([
-            "response" => $this->service->addUrl("https://www.example.com")
-        ]);
-    }
-    
-    public function removePathAction() : JsonModel
-    {
-        return new JsonModel([
-            "response" => $this->service->deleteUrl("https://www.example.com")
-        ]);
-    }
-    
-    public function showPathsAction() : JsonModel
-    {
-        return new JsonModel($this->service->readUrls());
+        // Get the request object
+        $request = $this->getRequest();
+
+        // Check if the request has JSON content
+        //   if (!$request->isPost() || !$request->isXmlHttpRequest()) {
+        //       return new JsonModel(['error' => 'Invalid request']);
+        //   }
+
+        // Get the JSON payload
+        $payload = $this->getRequest()->getContent();
+
+        // Attempt to decode the JSON data
+        $data = json_decode($payload, true);
+
+        //   if ($data === null) {
+        //       return new JsonModel(['error' => 'Invalid JSON payload']);
+        //   }
+
+        // Now you can work with the decoded data
+        $path = $data['path'];
+
+        echo json_encode($this->service->addUrl($path));
+        exit;
     }
 
+    public function removePathAction()
+    {
+        // Get the request object
+        $request = $this->getRequest();
+
+        // Check if the request has JSON content
+        //   if (!$request->isPost() || !$request->isXmlHttpRequest()) {
+        //       return new JsonModel(['error' => 'Invalid request']);
+        //   }
+
+        // Get the JSON payload
+        $payload = $this->getRequest()->getContent();
+
+        // Attempt to decode the JSON data
+        $data = json_decode($payload, true);
+
+        //   if ($data === null) {
+        //       return new JsonModel(['error' => 'Invalid JSON payload']);
+        //   }
+
+        // Now you can work with the decoded data
+        $path = $data['path'];
+
+        echo json_encode($this->service->deleteUrl($path));
+        exit;
+    }
+
+    public function showPathsAction()
+    {
+        echo json_encode($this->service->readUrls());
+        exit;
+    }
 }

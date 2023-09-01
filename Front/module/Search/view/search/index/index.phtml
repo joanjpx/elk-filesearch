@@ -67,26 +67,26 @@
     }
 
     .search-bar {
-        width: auto;
-        background-color: #bbb;
-        padding: 10px;
-        text-align: center;
-        min-height: 65px;
-        border-radius: 15px;
+      width: auto;
+      background-color: #bbb;
+      padding: 10px;
+      text-align: center;
+      min-height: 65px;
+      border-radius: 15px;
     }
 
     .settings-button {
-        float: left;
-        padding: 8px 15px;
-        background-color: #696969;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+      float: left;
+      padding: 8px 15px;
+      background-color: #696969;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
     .settings-button:hover {
-        background-color: #a9a9a9;
+      background-color: #a9a9a9;
     }
   </style>
 </head>
@@ -107,7 +107,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="urlModalLabel">Add URLs</h5>
+          <h5 class="modal-title" id="urlModalLabel">Add files location</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -115,13 +115,11 @@
         <div class="modal-body">
           <input type="text" class="form-control mb-2" id="urlInput" placeholder="Enter URL">
           <button type="button" class="btn btn-success" id="addUrlButton">Add URL</button>
-          <ul id="urlList" class="list-group mt-3">
-            <!-- URLs will be dynamically added here -->
-          </ul>
+          <div id="resultDiv"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+
         </div>
       </div>
     </div>
@@ -133,7 +131,29 @@
     const searchInput = document.getElementById('search-input');
     const suggestionsContainer = document.getElementById('suggestions');
     const searchButton = document.getElementById('search-button');
+    const addUrlButton = document.getElementById('addUrlButton');
 
+    addUrlButton.addEventListener('click', () => {
+
+      let path = document.getElementById('urlInput').value;
+
+      fetch('/search/add-path', {
+          method: 'POST',
+          body: JSON.stringify({
+            path: path
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Server response:', data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    })
     searchButton.addEventListener('click', () => {
 
       window.location.href = "/search/result?q=" + searchInput.value;
@@ -177,6 +197,60 @@
         suggestionsContainer.style.display = 'none';
       }, 200);
     });
+
+    const createDeleteButton = (path) => {
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.className = 'btn btn-danger btn-sm ml-2';
+
+      deleteButton.addEventListener('click', () => {
+        // Perform delete action or show confirmation dialog
+        // For demonstration purposes, just remove the path element
+        const pathElement = deleteButton.parentNode;
+        pathElement.parentNode.removeChild(pathElement);
+      });
+
+      return deleteButton;
+    }
+
+    // Function to fetch and populate the list of paths
+    const fetchAndPopulatePaths = () => {
+      fetch('/search/show-path')
+        .then(response => response.json())
+        .then(data => {
+          if (data.paths) {
+            const resultDiv = document.getElementById('resultDiv');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            data.paths.forEach(path => {
+              const pathElement = document.createElement('p');
+              pathElement.textContent = path;
+
+              const deleteButton = createDeleteButton(path);
+              pathElement.appendChild(deleteButton);
+
+              resultDiv.appendChild(pathElement);
+            });
+
+            // Show the modal after populating the paths
+            pathModal.show();
+          }
+        })
+        .catch(error => {
+          console.error('An error occurred:', error);
+        });
+    }
+
+    // ... Previous event listener for modal show ...
+    const pathModal = new bootstrap.Modal(document.getElementById('urlModal'));
+    // Listen for modal hide event to clear results when the modal is closed
+    pathModal.addEventListener('hide.bs.modal', () => {
+      const resultDiv = document.getElementById('resultDiv');
+      resultDiv.innerHTML = ''; // Clear the results when the modal is closed
+    });
+
+    pathModal.addEventListener('show.bs.modal', fetchAndPopulatePaths);
+    
   </script>
 </body>
 

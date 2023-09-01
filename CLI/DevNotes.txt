@@ -20,3 +20,12 @@
     basado en google:
         Link -> Nombre del archivo
         
+
+    TO-DO:
+        * Script de carga inicial [Rust Benjamin]
+        * Script que detecta cambios y hace eventos [DONE para hacer pruebas]
+        * Guardar rutas a Escanear JSON dentro del proyecto.
+        * Modificar la query segun relevancia
+        * Que la API traiga con la forma que me ha indicado.
+        * Que descargue los archivos
+

@@ -1,0 +1,43 @@
+
+GET /files/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match_phrase": {
+            "file_content": {
+              "query": "efectuar en base a mediciones",
+              "slop": 0
+            }
+          }
+        },
+        {
+          "match": {
+            "file_content": {
+              "query": "medi",
+              "operator": "or"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "title": {
+              "query": "efectuar en base a mediciones",
+              "slop": 0
+            }
+          }
+        },
+        {
+          "match": {
+            "title": {
+              "query": " en base a mediciones",
+              "operator": "or"
+            }
+          }
+        }
+      ],
+      "minimum_should_match": 0
+    }
+  }
+}
