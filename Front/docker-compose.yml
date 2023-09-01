@@ -11,7 +11,7 @@ services:
     volumes:
       - .:/var/www 
       - ./php8.1.ini:/usr/local/etc/php/conf.d/php8.1.ini
-      - /home/benjamin/shared_win/:/var/www/shared_win/
+      #- /home/benjamin/shared_win/:/var/www/shared_win/
       - /home/benjamin/Downloads/Test/:/var/www/ftest/
     labels:
       - "traefik.enable=true"
